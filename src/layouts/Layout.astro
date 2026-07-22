@@ -1,0 +1,32 @@
+---
+// Базовый макет. Один на весь сайт: сюда подключаются глобальные стили,
+// отсюда же задаётся язык, кодировка и мета. Все ресурсы - локальные,
+// ни одного внешнего <link>/<script> (требование под РФ, см. план 3.2).
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Лилия Козачук - боты, воронки и сайты для малого бизнеса',
+  description = 'Убираю ручную рутину: чат-боты, ИИ-ассистенты, воронки и сайты за дни, а не за месяцы.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
