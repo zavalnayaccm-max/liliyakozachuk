@@ -13,6 +13,11 @@ const {
   title = 'Лилия Козачук - боты, воронки и сайты для малого бизнеса',
   description = 'Убираю ручную рутину: чат-боты, ИИ-ассистенты, воронки и сайты за дни, а не за месяцы.',
 } = Astro.props;
+
+// Пути к статике в public/ должны учитывать base (сайт живёт в подпапке на
+// GitHub Pages). BASE_URL приходит из astro.config; срезаем возможный
+// завершающий слэш, чтобы `${base}/файл` не давал двойной слэш и не склеивался.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <!doctype html>
@@ -20,8 +25,8 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="icon" href={`${base}/favicon.ico`} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
