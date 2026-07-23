@@ -1,0 +1,43 @@
+---
+/**
+ * Экран 8. Квиз.
+ * Заголовок и подзаголовок - site-copy.md, экран 8.
+ *
+ * Сама логика квиза - подфаза А4, её здесь нет. Этот файл держит место и якорь
+ * #quiz: все кнопки со всех экранов ведут именно сюда, и якорь не должен
+ * поменяться, когда придёт квиз.
+ *
+ * TODO (А4): заменить блок с data-quiz-placeholder на логику - 3-4 вопроса,
+ * баллы, рекомендация пакета с ценой, финальная кнопка в Telegram. Полей
+ * «телефон» и «почта» здесь быть не может: статика на зарубежном хостинге не
+ * имеет права собирать персональные данные (план, 4.1 и 3.8).
+ */
+---
+
+<section id="quiz" class="night relative scroll-mt-4 overflow-hidden py-20 sm:py-28">
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -top-24 left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full opacity-50 blur-3xl"
+    style="background: radial-gradient(circle, rgba(75,57,239,0.5) 0%, rgba(75,57,239,0) 70%);"
+  >
+  </div>
+
+  <div class="shell relative">
+    <p class="eyebrow">Подбор пакета</p>
+    <h2 class="h-section mt-4 max-w-3xl text-white">Какой бот нужен вашему бизнесу</h2>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-[#c8d0e0]">
+      Четыре вопроса, две минуты. В конце скажу, какой пакет вам подходит и
+      сколько он стоит.
+    </p>
+
+    <div
+      data-quiz-placeholder
+      class="mt-10 rounded-3xl border border-dashed border-white/25 bg-ink-2/60 px-6 py-12 text-center sm:px-10 sm:py-16"
+    >
+      <p class="font-mono text-sm tracking-widest text-mist uppercase">Квиз собирается</p>
+      <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-[#c8d0e0]">
+        Четыре вопроса появятся здесь.
+      </p>
+    </div>
+  </div>
+</section>

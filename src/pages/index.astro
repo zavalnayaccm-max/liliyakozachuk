@@ -1,19 +1,41 @@
 ---
-// Фаза А1: страница-заглушка. Её единственная задача - доказать, что цепочка
-// «код Astro → GitHub Actions → GitHub Pages → домен liliyakozachuk.ru»
-// работает и открывается из РФ по https. Реальный лендинг - в фазе А3.
+/**
+ * Лендинг целиком - подфаза А3 плана `plans/2026-07-14-sait-vizitka.md`.
+ *
+ * Порядок экранов - из раздела 4 плана, менять его нельзя без правки плана:
+ * сверху боль и доказательства, «обо мне» девятым. Экран 8 (квиз) стоит здесь
+ * заглушкой с якорем #quiz - логика придёт в подфазе А4, а якорь уже боевой:
+ * на него ведут все кнопки страницы.
+ *
+ * Все ресурсы локальные: шрифты в src/fonts, картинок нет вообще, анимация на
+ * CSS и своём скрипте. Ни одного внешнего запроса (план, 3.2).
+ */
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Pains from '../components/Pains.astro';
+import Offer from '../components/Offer.astro';
+import Demo from '../components/Demo.astro';
+import Cases from '../components/Cases.astro';
+import Process from '../components/Process.astro';
+import Boundaries from '../components/Boundaries.astro';
+import Quiz from '../components/Quiz.astro';
+import About from '../components/About.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import StickyCta from '../components/StickyCta.astro';
 ---
 
-<Layout title="liliyakozachuk.ru - скоро здесь будет сайт">
-  <main class="flex min-h-dvh flex-col items-center justify-center gap-4 px-6 text-center">
-    <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
-      Скоро здесь будет сайт
-    </h1>
-    <p class="max-w-md text-balance text-base text-neutral-500">
-      Боты, воронки и сайты для малого бизнеса. Страница собрана на Astro и
-      развёрнута на GitHub Pages - проверяем, что домен открывается из России.
-    </p>
-    <p class="text-sm text-neutral-400">liliyakozachuk.ru</p>
+<Layout>
+  <main id="main">
+    <Hero />
+    <Pains />
+    <Offer />
+    <Demo />
+    <Cases />
+    <Process />
+    <Boundaries />
+    <Quiz />
+    <About />
   </main>
+  <SiteFooter />
+  <StickyCta />
 </Layout>

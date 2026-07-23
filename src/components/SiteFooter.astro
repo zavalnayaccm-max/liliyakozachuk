@@ -1,0 +1,70 @@
+---
+/**
+ * Экран 10. Футер.
+ * Каркас - site-copy.md, экран 10.
+ *
+ * Футер - не второй призыв. Контакты стоят здесь как реквизиты: человеку важно
+ * видеть, что за сайтом живой человек с документами. Кнопка та же, что везде.
+ *
+ * TODO (А5, нужно от Лилии): Telegram, публичная почта, ФИО и ИНН для оферты,
+ * ссылка на облегчённую политику обработки персональных данных (она нужна
+ * вместе с Яндекс.Метрикой, план 3.8). Всё это вписывается в
+ * src/data/content.ts - строки появятся здесь сами. Пока значений нет, строк
+ * тоже нет: выдуманный контакт хуже отсутствующего.
+ */
+import { contacts, QUIZ_ANCHOR } from '../data/content';
+
+const year = new Date().getFullYear();
+const hasContacts = contacts.telegram !== null || contacts.email !== null;
+const legalLine = [contacts.legalName, contacts.inn && `ИНН ${contacts.inn}`]
+  .filter(Boolean)
+  .join(', ');
+---
+
+{/* Нижний отступ на телефоне больше: там снизу висит липкая кнопка, и она не
+    должна перекрывать реквизиты. */}
+<footer class="night border-t border-white/10 pt-16 pb-32 sm:py-20">
+  <div class="shell">
+    <div class="flex flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p
+          class="max-w-md font-display text-xl leading-tight font-semibold tracking-[-0.03em] text-white sm:text-2xl"
+        >
+          Осталось понять, какой бот нужен вам.
+        </p>
+        <a href={QUIZ_ANCHOR} class="cta mt-6 w-full sm:w-auto">Пройти квиз</a>
+      </div>
+
+      <div class="text-sm leading-relaxed text-mist">
+        {
+          hasContacts && (
+            <p class="space-x-4">
+              {contacts.telegram && (
+                <a
+                  href={contacts.telegram}
+                  class="underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Telegram
+                </a>
+              )}
+              {contacts.email && (
+                <a
+                  href={`mailto:${contacts.email}`}
+                  class="underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                >
+                  {contacts.email}
+                </a>
+              )}
+            </p>
+          )
+        }
+        <p class={hasContacts ? 'mt-2' : ''}>
+          Самозанятая{legalLine && `, ${legalLine}`}
+        </p>
+        <p class="stamp mt-4 block">&copy; {year} Лилия Козачук</p>
+      </div>
+    </div>
+  </div>
+</footer>

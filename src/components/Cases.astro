@@ -1,0 +1,196 @@
+---
+/**
+ * Экран 5. Что было и что стало.
+ * Текст - site-copy.md, экран 5. Цифры Кейса 1 - life-metrics.md через
+ * src/data/content.ts.
+ *
+ * Это самый дорогой экран страницы, поэтому цифры поданы заголовочным
+ * размером, а не строчкой в углу карточки. Отзыв стоит внутри карточки и после
+ * цифр: рядом со своей работой он читается как факт, а сам по себе - как
+ * накрутка (план, 4.2).
+ *
+ * По Кейсу 2 (case-jurist-urapoliya.md): согласие заказчиков на публикацию
+ * отзыва и материалов получено 2026-07-23, единственное условие - не должно
+ * быть видно ников их клиентов; их здесь нет. Имена заказчиков не названы:
+ * решение «с именами или обезличенно» остаётся за Лилией, до него идёт
+ * обезличенный вариант из site-copy.md. Названия игры на странице нет - в
+ * тексте кейса его нет тоже, а вёрстка текст не дописывает.
+ */
+import ChatFitness from './ChatFitness.astro';
+import GameLoop from './GameLoop.astro';
+import { fitnessCase } from '../data/content';
+---
+
+<section class="py-20 sm:py-28">
+  <div class="shell">
+    <p class="eyebrow">Два клиента, оба работают до сих пор</p>
+    <h2 class="h-section mt-4">Что было и что стало</h2>
+
+    {/* ------------------------------ Кейс 1 ------------------------------ */}
+    <article class="mt-14 grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-7">
+        <p class="eyebrow">Кейс 1 &middot; Фитнес-центр, две студии</p>
+
+        <div class="mt-6">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <span class="figure text-ink/35">{fitnessCase.before}</span>
+            <span aria-hidden="true" class="h-0.5 w-10 bg-amber sm:w-14"></span>
+            <span class="figure text-ink">{fitnessCase.after}</span>
+            <span class="font-mono text-xs tracking-widest text-graphite uppercase">
+              {fitnessCase.unit}
+            </span>
+          </div>
+          <p class="mt-4 max-w-lg text-base leading-relaxed text-graphite">
+            Почти вдвое больше - при том же потоке обращений и тех же деньгах на
+            рекламу.
+          </p>
+        </div>
+
+        <div class="mt-10 border-t border-ink/10 pt-8">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span class="figure text-ink">{fitnessCase.lost}</span>
+            <span class="font-mono text-xs tracking-widest text-graphite uppercase">
+              {fitnessCase.lostLabel}
+            </span>
+          </div>
+          <p class="mt-4 max-w-lg text-base leading-relaxed text-graphite">
+            Раньше 1-2 в день висели вообще без ответа, остальные ждали больше
+            двух суток.
+          </p>
+        </div>
+
+        <dl class="mt-10 space-y-6">
+          <div>
+            <dt class="eyebrow">Было</dt>
+            <dd class="mt-2 text-base leading-relaxed text-graphite sm:text-[1.0625rem]">
+              В две студии пишут 8-12 человек в день - вечером, ночью, в
+              воскресенье. Администратор не робот: часть сообщений оставалась
+              без ответа совсем, часть получала его через двое суток. До записи
+              доходило 2-3 человека в день.
+            </dd>
+          </div>
+          <div>
+            <dt class="eyebrow">Стало</dt>
+            <dd class="mt-2 text-base leading-relaxed text-graphite sm:text-[1.0625rem]">
+              ИИ отвечает в Instagram и ВКонтакте круглосуточно. Сам закрывает
+              частые вопросы, предлагает записаться, забирает телефон и передаёт
+              менеджеру уже тёплого клиента. Администратор перестал сто раз в
+              день отправлять одно и то же, а ночные сообщения не висят до утра.
+            </dd>
+          </div>
+        </dl>
+
+        {/* Отзыв дословно, вместе с опечатками автора: приглаженный отзыв
+            читается как выдуманный (правило из testimonials.md). */}
+        <blockquote class="mt-10 border-l-2 border-violet pl-5">
+          <p class="text-base leading-relaxed whitespace-pre-line text-ink sm:text-[1.0625rem]">
+            Спасибо исполнителю!{'\n'}Все очень оперативно. Все правки так же
+            вносились быстро.{'\n'}Очень ответственный исполнитель!{'\n'}Буду еще
+            обращаться по необходимости.{'\n'}Рекомендую однозначно!
+          </p>
+          <footer class="stamp mt-4 block text-graphite">
+            Маргарита, управляющая фитнес-студией. Отзыв на Авито, 5 звёзд.
+          </footer>
+        </blockquote>
+      </div>
+
+      <div class="lg:col-span-5">
+        <ChatFitness />
+      </div>
+    </article>
+
+    {/* ------------------------------ Кейс 2 ------------------------------ */}
+    <article id="case-game" class="mt-20 grid scroll-mt-16 gap-10 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-7">
+        <p class="eyebrow">Кейс 2 &middot; Юристы, работают с дизайнерами интерьеров</p>
+
+        <div class="mt-6">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span class="figure text-ink">20+</span>
+            <span class="font-mono text-xs tracking-widest text-graphite uppercase">
+              ботов запущено
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-10 border-t border-ink/10 pt-8">
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span class="figure text-ink">5</span>
+            <span class="max-w-[14rem] font-mono text-xs tracking-widest text-graphite uppercase">
+              работают постоянно и приносят доход
+            </span>
+          </div>
+          <p class="mt-4 max-w-lg text-base leading-relaxed text-graphite">
+            Работаем не первый год. Новогоднюю игровую активацию запускаем
+            второй сезон подряд.
+          </p>
+        </div>
+
+        <dl class="mt-10 space-y-6">
+          <div>
+            <dt class="eyebrow">Было</dt>
+            <dd class="mt-2 text-base leading-relaxed text-graphite sm:text-[1.0625rem]">
+              Аудитория есть, продаж нет - подписчиков никто не доводил до
+              покупки. Воронка придумана, но без бота физически не собиралась.
+            </dd>
+          </div>
+          <div>
+            <dt class="eyebrow">Стало</dt>
+            <dd class="mt-2 space-y-4 text-base leading-relaxed text-graphite sm:text-[1.0625rem]">
+              <p>
+                За несколько лет запустили больше 20 ботов, пять из них работают
+                постоянно и приносят деньги: бот по подписке в Telegram, бот для
+                дизайнеров интерьеров про работу без штрафов, бот-консультант для
+                тех, кто уже купил договор.
+              </p>
+              <p>
+                Квиз «качественный ли у вас договор»: клиент проходит тест, по
+                сумме баллов получает свой вариант ответа, и все варианты ведут к
+                покупке готовых договоров.
+              </p>
+              <p>
+                <strong class="font-semibold text-ink"
+                  >Новогодняя игровая активация - второй год подряд.</strong
+                > Подписчики получают баллы за активность, меняют их на коллекционные
+                карточки и собирают коллекции ради приза. Призы - собственные продукты
+                юристов: договоры, материалы о безопасной работе, сертификаты. Игра
+                не просто развлекает аудиторию - она раздаёт продукт заказчика и
+                подводит к покупке. Вовлекает и продаёт одновременно.
+              </p>
+            </dd>
+          </div>
+        </dl>
+
+        <blockquote class="mt-10 border-l-2 border-violet pl-5">
+          <p class="text-base leading-relaxed whitespace-pre-line text-ink sm:text-[1.0625rem]">
+            С Лилией работаем уже очень много лет. Она уже стала частью нашей
+            команды.{'\n'}С ней запустили уже более 20 ботов. Сейчас у нас на
+            постоянной основе работают 5, которые приносят нам постоянный доход.
+          </p>
+          <footer class="stamp mt-4 block text-graphite">
+            Юристы, работают с дизайнерами интерьеров.
+          </footer>
+        </blockquote>
+
+        {/* Здесь говорит не клиент обо мне, а аудитория клиента о результате -
+            самое сильное доказательство на странице, поэтому набрано крупно. */}
+        <blockquote class="mt-10 rounded-2xl bg-paper-2 p-6 ring-1 ring-ink/8 sm:p-8">
+          <p
+            class="font-display text-lg leading-snug font-medium tracking-[-0.02em] text-ink sm:text-2xl"
+          >
+            «Работа остановилась. Ждём новый день, чтобы заработать баллы и
+            получить очередную карточку».
+          </p>
+          <footer class="stamp mt-5 block text-graphite">
+            Так писали подписчики во время игровой активации - в пересказе
+            заказчиков.
+          </footer>
+        </blockquote>
+      </div>
+
+      <div class="lg:col-span-5">
+        <GameLoop />
+      </div>
+    </article>
+  </div>
+</section>

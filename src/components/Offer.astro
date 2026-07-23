@@ -1,0 +1,124 @@
+---
+/**
+ * Экран 3. Что можно собрать.
+ * Текст и порядок блоков - site-copy.md, экран 3.
+ *
+ * Порядок здесь не вкусовщина, а защита: сначала связка и дорогие пакеты,
+ * «Кодовое слово» за 5 000 - последним. Иначе весь сайт читается как «боты за
+ * пять тысяч» (план, раздел 6). Якорь цены на экране - 15 000 ₽.
+ */
+import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
+---
+
+<section class="pb-20 sm:pb-28">
+  <div class="shell">
+    <p class="eyebrow">Две линейки и одна связка</p>
+    <h2 class="h-section mt-4">Что можно собрать</h2>
+
+    {/* Главный блок. Стоит первым и единственный на тёмном - это главный
+        оффер, и он должен быть виден раньше всех цен. */}
+    <article
+      class="night relative mt-12 overflow-hidden rounded-3xl px-6 py-10 sm:px-10 sm:py-12"
+    >
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-24 -bottom-32 h-80 w-80 rounded-full opacity-70 blur-3xl"
+        style="background: radial-gradient(circle, rgba(75,57,239,0.5) 0%, rgba(75,57,239,0) 70%);"
+      >
+      </div>
+
+      <div class="relative">
+        <p class="eyebrow text-amber!">Главное предложение</p>
+        <h3
+          class="mt-4 font-display text-2xl leading-tight font-semibold tracking-[-0.03em] text-white sm:text-4xl"
+        >
+          Сайт + бот в одной связке
+        </h3>
+
+        {/* Схема связки: два узла и переход между ними. Это буквально то, что
+            продаётся, поэтому нарисовано, а не описано словами второй раз. */}
+        {/* Цепочка держится в одну строку и на самом узком телефоне: разорванная
+            схема связки читается как сломанная вёрстка, а это главный оффер. */}
+        <div
+          aria-hidden="true"
+          class="mt-8 flex flex-nowrap items-center gap-2 font-mono text-[0.625rem] tracking-[0.12em] text-mist uppercase sm:gap-3 sm:text-xs sm:tracking-widest"
+        >
+          <span class="rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 sm:px-4 sm:py-3"
+            >Сайт</span
+          >
+          <span class="h-px w-4 shrink-0 bg-violet-soft sm:w-14"></span>
+          <span class="rounded-xl border border-white/15 bg-white/5 px-3 py-2.5 sm:px-4 sm:py-3"
+            >Бот</span
+          >
+          <span class="h-px w-4 shrink-0 bg-violet-soft sm:w-14"></span>
+          <span class="rounded-xl bg-violet px-3 py-2.5 text-white sm:px-4 sm:py-3">Заявка</span>
+        </div>
+
+        <p class="mt-8 max-w-2xl text-base leading-relaxed text-[#c8d0e0] sm:text-lg">
+          Посетитель попадает не в пустоту, а в воронку: сайт приводит человека,
+          бот доводит его до заявки. Обычный сайтодел так не умеет, обычный
+          ботодел тоже.
+        </p>
+        <p class="mt-4 max-w-2xl text-base leading-relaxed text-mist">
+          Цена - сумма двух частей. Но собираю и сдаю это как одно решение, а не
+          два отдельных заказа.
+        </p>
+      </div>
+    </article>
+
+    {/* Линейка 1 */}
+    <h3 class="eyebrow mt-16">Боты и воронки</h3>
+    <ul class="mt-6 grid gap-4 md:grid-cols-2">
+      {
+        botPackages.map((pkg) => (
+          <li class="flex flex-col rounded-2xl bg-paper-2 p-6 ring-1 ring-ink/8 sm:p-7">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h4 class="font-display text-lg font-semibold tracking-tight sm:text-xl">
+                {pkg.name}
+              </h4>
+              <p class="price text-sm whitespace-nowrap sm:text-base">{pkg.price}</p>
+            </div>
+            <p class="mt-4 text-[0.9375rem] leading-relaxed text-graphite">{pkg.body}</p>
+            {pkg.note && (
+              <p class="mt-4 border-t border-ink/8 pt-4 text-sm leading-relaxed text-graphite">
+                {pkg.note}
+              </p>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+
+    {/* Линейка 2 */}
+    <h3 class="eyebrow mt-14">Сайты и приложения</h3>
+    {/* На телефоне цена всегда стоит под названием: если пускать её по остатку
+        строки, у одних позиций она оказывается рядом, у других под ними, и
+        колонка цен выглядит случайной. */}
+    <ul class="mt-6 divide-y divide-ink/10 border-y border-ink/10">
+      {
+        siteProducts.map((product) => (
+          <li
+            class="flex flex-col gap-y-2 py-5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-x-6"
+          >
+            <div>
+              <h4 class="font-display text-lg font-semibold tracking-tight">{product.name}</h4>
+              <p class="mt-1 text-[0.9375rem] text-graphite">{product.body}</p>
+            </div>
+            <p class="price text-sm whitespace-nowrap sm:text-base">{product.price}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      /* Строка-факт про срок сборки этого сайта. Число подставляется по факту
+         запуска в подфазе А5 - до тех пор строки просто нет. Выдуманная цифра
+         тут хуже её отсутствия: это единственное доказательство линейки 2. */
+      siteBuiltInDays !== null && (
+        <p class="mt-8 font-display text-lg leading-snug font-medium tracking-tight sm:text-xl">
+          Этот сайт собран за {siteBuiltInDays} дней. Ваш соберу так же.
+        </p>
+      )
+    }
+  </div>
+</section>

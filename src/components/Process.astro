@@ -1,0 +1,62 @@
+---
+/**
+ * Экран 6. Четыре шага от заявки до запуска.
+ * Текст - site-copy.md, экран 6.
+ *
+ * Единственное место на сайте, где стоят номера: здесь порядок - это факт, а не
+ * украшение. Шаги идут именно в такой последовательности, и человеку важно
+ * видеть, что созвон бесплатный и что он не первый.
+ *
+ * Задача экрана - снять страх «а вдруг разведут». Отсюда «бесплатно и ни к чему
+ * не обязывает» и «цена не растёт по ходу».
+ */
+import { QUIZ_ANCHOR } from '../data/content';
+
+const steps = [
+  {
+    title: 'Квиз',
+    body: 'Четыре вопроса, две минуты. В конце скажу, какой пакет вам подходит и сколько он стоит.',
+  },
+  {
+    title: 'Бесплатный разбор',
+    body: 'Созвон: смотрю ваш бизнес, нахожу в нём рутину, помогаю сформулировать ТЗ. Бесплатно и ни к чему не обязывает. Если у вас уже есть своё ТЗ - задам вопросы и поправлю.',
+  },
+  {
+    title: 'ТЗ и цена',
+    body: 'Фиксируем письменно, что именно делаем и сколько это стоит. Дальше цена не растёт по ходу.',
+  },
+  {
+    title: 'Проект',
+    body: 'Собираю, запускаю и настраиваю у вас. Записываю короткое видео, как этим пользоваться, - вы получаете работающее решение, а не исходники «разберись сам». Два круга правок входят в цену.',
+  },
+];
+---
+
+<section class="pb-20 sm:pb-28">
+  <div class="shell">
+    <p class="eyebrow">Как идёт работа</p>
+    <h2 class="h-section mt-4">Четыре шага от заявки до запуска</h2>
+
+    <ol class="mt-12 grid gap-px overflow-hidden rounded-2xl bg-ink/10 sm:grid-cols-2">
+      {
+        steps.map((step, i) => (
+          <li class="bg-paper-2 p-6 sm:p-8">
+            <span class="font-mono text-sm font-semibold text-violet">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class="mt-3 font-display text-xl font-semibold tracking-tight">{step.title}</h3>
+            <p class="mt-3 text-[0.9375rem] leading-relaxed text-graphite">{step.body}</p>
+            {i === 0 && (
+              <a
+                href={QUIZ_ANCHOR}
+                class="mt-4 inline-block font-mono text-sm text-violet underline decoration-violet/40 underline-offset-4 hover:decoration-violet"
+              >
+                Начать с первого шага
+              </a>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

@@ -30,8 +30,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {/* Цвет строки браузера на телефоне - под тёмный первый экран */}
+    <meta name="theme-color" content="#0e1524" />
+    {/* Превью ссылки в мессенджерах: сайт кидают в переписку, это его основной
+        способ распространения. Картинки превью нет намеренно - её пришлось бы
+        держать в репозитории, а своей графики пока нет. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
   </head>
   <body>
+    <a href="#main" class="skip-link">Перейти к содержанию</a>
     <slot />
   </body>
 </html>
+
+<style>
+  /* Ссылка для тех, кто ходит по странице с клавиатуры: видна только при
+     фокусе, иначе не мешает. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 50;
+  }
+  .skip-link:focus {
+    left: 0.75rem;
+    top: 0.75rem;
+    background-color: var(--color-violet);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+  }
+</style>

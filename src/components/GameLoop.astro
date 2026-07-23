@@ -1,0 +1,308 @@
+---
+/**
+ * Визуал Кейса 2 - анимация игровой петли.
+ * Источник механики: business/assets/case-jurist-urapoliya.md, раздел «Диалог с
+ * ботом» и «Механика игры».
+ *
+ * Почему анимация, а не видео: живого видео игры не будет - она сезонная и
+ * включается только в декабре (план, А0). Плюс видеофайл тяжёлый для мобильного
+ * интернета, а телефон здесь основной вход. Петля собрана на CSS и небольшом
+ * скрипте, всё уезжает в билд - ни одного внешнего запроса.
+ *
+ * Что здесь показано и чего здесь нет:
+ *  - показана механика: баланс баллов -> обмен -> карточка -> проверка коллекции;
+ *  - реплики бота взяты из реальной переписки почти дословно;
+ *  - названия игры в анимации нет: в site-copy.md кейс говорит «новогодняя
+ *    игровая активация», и вёрстка не добавляет к тексту того, чего в нём нет;
+ *  - ников и имён клиентов заказчика нет нигде - это прямое условие разрешения
+ *    на публикацию;
+ *  - чужих реквизитов (ИП, ИНН, почта с инфографики) нет: карточки нарисованы
+ *    здесь, а юридический футер инфографики на сайт не идёт.
+ *
+ * TODO (нужно от Лилии): настоящие изображения карточек в хорошем качестве.
+ * Пока их нет в проекте, карточка нарисована стилями по описанию из файла кейса.
+ * Придут файлы - подменяется разметка .gcard, вся остальная петля остаётся.
+ */
+
+/** Коричневая коллекция - три улицы, названия из файла кейса. */
+const collection = ['Улица Минимализма', 'Улица Современной классики', 'Скандинавский переулок'];
+---
+
+<figure class="night overflow-hidden rounded-3xl p-5 sm:p-7" data-loop>
+  <div class="flex items-center justify-between border-b border-white/10 pb-4">
+    <span class="stamp">Игровой бот</span>
+    <span class="font-mono text-sm font-semibold text-amber">
+      <span data-balance>144</span> балла
+    </span>
+  </div>
+
+  <div class="mt-5 space-y-3">
+    <div class="step flex justify-end" data-step="1">
+      <span class="chip">Обменять баллы</span>
+    </div>
+
+    <p class="step bubble bubble-in max-w-[88%]" data-step="2">
+      У тебя 154 балла. Если хочешь обменять их на карточку - жми.
+    </p>
+
+    <div class="step flex justify-end" data-step="3">
+      <span class="chip">Получить карточку</span>
+    </div>
+
+    <p class="step bubble bubble-in max-w-[88%]" data-step="4">
+      У тебя осталось 144 балла. Твоя карточка:
+    </p>
+
+    <div class="step" data-step="5">
+      <div class="gcard">
+        <span class="gcard-band"></span>
+        <span class="gcard-name">Улица Минимализма</span>
+        <span class="gcard-meta">коричневая коллекция</span>
+      </div>
+    </div>
+
+    <p class="step bubble bubble-in max-w-[88%]" data-step="6">Проверяем наличие комплекта улиц...</p>
+
+    <p class="step bubble bubble-in max-w-[88%]" data-step="7">
+      Комплект пока не собран - не хватает ещё двух коричневых улиц. Продолжай в
+      том же духе, и кто знает - может, главный приз выиграешь именно ты!
+    </p>
+  </div>
+
+  {/* Полоса коллекции: видно, ради чего человек возвращается каждый день */}
+  <div class="mt-6 border-t border-white/10 pt-5">
+    <div class="flex items-baseline justify-between">
+      <span class="stamp">Коричневая коллекция</span>
+      <span class="stamp"><span data-collected>1</span> / 3</span>
+    </div>
+    <ul class="mt-3 grid grid-cols-3 gap-2">
+      {
+        collection.map((street, i) => (
+          <li class={`slot${i === 0 ? ' is-on' : ''}`} data-slot={i === 0 ? '1' : undefined}>
+            <span class="slot-band"></span>
+            <span class="slot-name">{street}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <figcaption class="mt-6 border-t border-white/10 pt-4 text-sm text-mist">
+    Схема игровой петли, а не скриншот: баллы, обмен, карточка, проверка
+    коллекции.
+  </figcaption>
+</figure>
+
+<style>
+  /* По умолчанию петля показана целиком - это осмысленный итоговый кадр.
+     Прятать шаги начинает только скрипт, когда берёт анимацию на себя
+     (он ставит на панель data-js). Так человек без работающего JS видит
+     готовую схему, а не чёрную дыру на пол-экрана. */
+  .step {
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease;
+  }
+  [data-js] .step {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  [data-js] .step.is-on {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Нажатие в боте - не сообщение, а кнопка. Выглядит по-другому намеренно. */
+  .chip {
+    display: inline-block;
+    border-radius: 999px;
+    border: 1px solid var(--color-violet-soft);
+    background-color: rgba(123, 109, 255, 0.14);
+    color: #dcd8ff;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.9rem;
+  }
+
+  /* Карточка коллекции. Нарисована стилями: настоящих файлов карточек в
+     проекте пока нет (см. TODO вверху файла). */
+  .gcard {
+    display: block;
+    width: 11rem;
+    max-width: 100%;
+    border-radius: 0.75rem;
+    background-color: #f6f2ec;
+    color: #1c1512;
+    padding: 0.75rem;
+    box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  }
+  /* Карточка не просто проявляется, а прилетает - это самый заметный момент
+     петли, ради него она и собрана. */
+  .step[data-step='5'] {
+    transition:
+      opacity 0.45s ease,
+      transform 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  [data-js] .step[data-step='5'] {
+    transform: translateY(14px) rotate(-4deg) scale(0.92);
+  }
+  [data-js] .step[data-step='5'].is-on {
+    transform: none;
+  }
+  .gcard-band {
+    display: block;
+    height: 1.75rem;
+    border-radius: 0.375rem;
+    background-color: #8b5e3c;
+  }
+  .gcard-name {
+    display: block;
+    margin-top: 0.625rem;
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .gcard-meta {
+    display: block;
+    margin-top: 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7a6a5e;
+  }
+
+  /* Слоты коллекции: пустой - контур, полученный - в цвете */
+  .slot {
+    border-radius: 0.5rem;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    padding: 0.5rem;
+  }
+  .slot.is-on {
+    border-style: solid;
+    border-color: rgba(139, 94, 60, 0.9);
+    background-color: rgba(139, 94, 60, 0.16);
+  }
+  .slot-band {
+    display: block;
+    height: 0.375rem;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+  .slot.is-on .slot-band {
+    background-color: #8b5e3c;
+  }
+  .slot-name {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.6875rem;
+    line-height: 1.25;
+    color: var(--color-mist);
+  }
+  .slot.is-on .slot-name {
+    color: #efe6dd;
+  }
+</style>
+
+<script>
+  /**
+   * Петля игровой механики: 11 секунд, зациклена.
+   *
+   * Три правила, которые здесь соблюдаются:
+   *  1. Системная настройка «меньше движения» - анимация не запускается вообще,
+   *     показывается осмысленный итоговый кадр.
+   *  2. Петля крутится только когда видна на экране. Иначе она жгла бы батарею
+   *     телефона, пока человек читает совсем другую часть страницы.
+   *  3. Никаких внешних библиотек - это несколько строк на таймерах.
+   */
+  const panel = document.querySelector<HTMLElement>('[data-loop]');
+
+  if (panel) {
+    const steps = Array.from(panel.querySelectorAll<HTMLElement>('.step'));
+    const balanceEl = panel.querySelector<HTMLElement>('[data-balance]');
+    const collectedEl = panel.querySelector<HTMLElement>('[data-collected]');
+    const slot = panel.querySelector<HTMLElement>('[data-slot="1"]');
+
+    /** [момент в мс от начала петли, какие шаги к этому моменту показаны] */
+    const timeline: Array<[number, number]> = [
+      [300, 1],
+      [1400, 2],
+      [2700, 3],
+      [3700, 4],
+      [4100, 5],
+      [5600, 6],
+      [7400, 7],
+    ];
+    const LOOP_MS = 11000;
+
+    const show = (upTo: number) => {
+      steps.forEach((step) => {
+        const n = Number(step.dataset.step);
+        step.classList.toggle('is-on', n <= upTo);
+      });
+      if (balanceEl) balanceEl.textContent = upTo >= 4 ? '144' : '154';
+      if (collectedEl) collectedEl.textContent = upTo >= 7 ? '1' : '0';
+      if (slot) slot.classList.toggle('is-on', upTo >= 7);
+    };
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let timers: number[] = [];
+    let running = false;
+
+    const clear = () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      timers = [];
+    };
+
+    const runCycle = () => {
+      show(0);
+      timeline.forEach(([at, upTo]) => {
+        timers.push(window.setTimeout(() => show(upTo), at));
+      });
+      timers.push(window.setTimeout(runCycle, LOOP_MS));
+    };
+
+    /**
+     * Атрибут data-js вешается только на время самой анимации. Пока его нет,
+     * действует разметка по умолчанию - готовый итоговый кадр. Поэтому пустой
+     * панели не бывает никогда: ни до входа в экран, ни после выхода из него,
+     * ни если скрипт вообще не выполнился.
+     */
+    const start = () => {
+      if (running || reduced.matches) return;
+      running = true;
+      panel.dataset.js = 'on';
+      runCycle();
+    };
+
+    const stop = () => {
+      running = false;
+      clear();
+      show(7); // приводим цифры и коллекцию к итоговому кадру
+      delete panel.dataset.js;
+    };
+
+    if (!reduced.matches) {
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) start();
+              else stop();
+            }
+          },
+          { threshold: 0.2 }
+        );
+        observer.observe(panel);
+      } else {
+        start();
+      }
+    }
+
+    // Настройку можно переключить прямо во время просмотра - реагируем.
+    reduced.addEventListener('change', () => (reduced.matches ? stop() : start()));
+  }
+</script>

@@ -1,0 +1,57 @@
+---
+/**
+ * Липкая кнопка внизу экрана - только на телефоне.
+ *
+ * Зачем: телефон - основной вход на сайт (люди приходят из переписки и из шапки
+ * профиля), а страница длинная. Без липкой кнопки человек, который дочитал до
+ * кейсов, должен листать обратно наверх.
+ *
+ * Это не второй призыв: кнопка ведёт в тот же квиз, что и все остальные.
+ * Прячется в двух случаях - пока человек на первом экране (там кнопка и так
+ * перед глазами) и когда доехал до самого квиза.
+ */
+import { QUIZ_ANCHOR } from '../data/content';
+---
+
+<div
+  data-sticky-cta
+  class="pointer-events-none fixed inset-x-0 bottom-0 z-40 translate-y-full px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] opacity-0 transition-[transform,opacity] duration-300 sm:hidden"
+>
+  <div class="pointer-events-auto">
+    <a href={QUIZ_ANCHOR} class="cta w-full shadow-[0_-6px_24px_-8px_rgba(14,21,36,0.45)]">
+      Пройти квиз
+    </a>
+  </div>
+</div>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-sticky-cta]');
+  // Экраны, на которых кнопка-дубль не нужна: первый (там кнопка и так на виду),
+  // сам квиз и футер (в обоих уже стоит своя такая же кнопка).
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const quiz = document.querySelector<HTMLElement>('#quiz');
+  const footer = document.querySelector<HTMLElement>('footer');
+
+  if (bar && hero && quiz && footer && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>([hero]);
+
+    const apply = () => {
+      const show = visible.size === 0;
+      bar.classList.toggle('translate-y-full', !show);
+      bar.classList.toggle('opacity-0', !show);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target);
+          else visible.delete(entry.target);
+        }
+        apply();
+      },
+      { threshold: 0 }
+    );
+
+    for (const el of [hero, quiz, footer]) observer.observe(el);
+  }
+</script>
