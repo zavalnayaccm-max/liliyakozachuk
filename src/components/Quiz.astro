@@ -1,17 +1,27 @@
 ---
 /**
- * Экран 8. Квиз.
+ * Экран 8. Квиз - подфаза А4.
  * Заголовок и подзаголовок - site-copy.md, экран 8.
+ * Вопросы, баллы и экраны результата - src/data/quiz.ts (собран по quiz-spec.md).
  *
- * Сама логика квиза - подфаза А4, её здесь нет. Этот файл держит место и якорь
- * #quiz: все кнопки со всех экранов ведут именно сюда, и якорь не должен
- * поменяться, когда придёт квиз.
+ * Здесь только вёрстка и переключение экранов. Ни одного вопроса и ни одной цены
+ * прямо в разметке: всё приходит из данных, чтобы в Фазе Б к той же логике
+ * достроилась форма заявки без переписывания квиза (план, 4.1).
  *
- * TODO (А4): заменить блок с data-quiz-placeholder на логику - 3-4 вопроса,
- * баллы, рекомендация пакета с ценой, финальная кнопка в Telegram. Полей
- * «телефон» и «почта» здесь быть не может: статика на зарубежном хостинге не
- * имеет права собирать персональные данные (план, 4.1 и 3.8).
+ * Якорь #quiz боевой - на него ведут все кнопки страницы, менять нельзя.
+ *
+ * Чего здесь нет и быть не может в Фазе А: полей «телефон» и «почта», отправки
+ * ответов куда-либо, счётчиков и аналитики. Ответы живут только в памяти
+ * вкладки и умирают вместе с ней - в том числе поэтому витрина на зарубежной
+ * статике законна (план, 1 и 3.8).
+ *
+ * Без JavaScript квиз не пройти - это интерактив. Поэтому по умолчанию в
+ * разметке видны все четыре вопроса (человек хотя бы понимает, о чём спросят),
+ * кнопки выключены, а внизу стоит честная строка с прямой ссылкой в Telegram.
+ * Скрипт при старте включает кнопки и берёт показ экранов на себя.
  */
+import { questions, results, BUCKET_ORDER } from '../data/quiz';
+import { telegramUrl } from '../data/content';
 ---
 
 <section id="quiz" class="night relative scroll-mt-4 overflow-hidden py-20 sm:py-28">
@@ -31,13 +41,319 @@
     </p>
 
     <div
-      data-quiz-placeholder
-      class="mt-10 rounded-3xl border border-dashed border-white/25 bg-ink-2/60 px-6 py-12 text-center sm:px-10 sm:py-16"
+      data-quiz
+      class="mt-10 rounded-3xl border border-white/12 bg-ink-2/60 p-5 sm:p-8 md:p-10"
     >
-      <p class="font-mono text-sm tracking-widest text-mist uppercase">Квиз собирается</p>
-      <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-[#c8d0e0]">
-        Четыре вопроса появятся здесь.
+      {/* Прогресс. Появляется только вместе со скриптом: без него шагов нет. */}
+      <div data-progress hidden>
+        <span class="stamp" data-progress-text>Вопрос 1 из {questions.length}</span>
+        <div class="mt-3 h-1 w-full overflow-hidden rounded-full bg-white/10">
+          <span data-bar class="progress-bar block h-full rounded-full bg-amber"></span>
+        </div>
+      </div>
+
+      <div class="space-y-10" data-questions>
+        {
+          questions.map((question, qi) => (
+            <div class="q-card" data-q={qi}>
+              {/* tabindex=-1: после ответа фокус переезжает сюда, иначе человек
+                  на клавиатуре и в скринридере теряет место */}
+              <h3
+                class="q-title font-display text-xl leading-tight font-semibold tracking-[-0.02em] text-white sm:text-2xl"
+                tabindex="-1"
+                data-title
+              >
+                {question.title}
+              </h3>
+
+              <div class="mt-5 grid gap-3">
+                {question.options.map((option, oi) => (
+                  <button type="button" class="opt" data-opt={oi} aria-pressed="false" disabled>
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <button type="button" class="minor mt-6" data-back hidden>&larr; Назад</button>
+
+      {/* Экраны результата. Все четыре лежат в разметке готовыми, скрипт только
+          показывает нужный - никакого сбора HTML строками. */}
+      <div data-results aria-live="polite">
+        {
+          BUCKET_ORDER.map((bucket) => {
+            const result = results[bucket];
+            return (
+              <div class="result" data-result={bucket} hidden>
+                <p class="eyebrow">Ваш вариант</p>
+                <h3 class="mt-3 font-display text-2xl leading-tight font-semibold tracking-[-0.03em] text-white sm:text-3xl">
+                  Вам подходит {result.name}
+                </h3>
+                <p class="price mt-3 text-lg sm:text-xl">{result.price}</p>
+
+                <p class="mt-6 max-w-2xl text-base leading-relaxed text-[#c8d0e0] sm:text-lg">
+                  {result.body}
+                </p>
+                {result.note && (
+                  <p class="mt-4 max-w-2xl text-sm leading-relaxed text-mist">{result.note}</p>
+                )}
+
+                <div class="mt-8">
+                  {telegramUrl ? (
+                    <a
+                      href={telegramUrl}
+                      class="cta w-full sm:w-auto"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Написать мне в Telegram
+                    </a>
+                  ) : (
+                    /* TODO: username Telegram не задан в content.ts - кнопка
+                       выключена намеренно. Битая ссылка хуже выключенной кнопки. */
+                    <span class="cta w-full sm:w-auto" aria-disabled="true">
+                      Telegram появится здесь
+                    </span>
+                  )}
+                </div>
+
+                <p class="mt-4 max-w-md text-sm leading-relaxed text-mist">
+                  Пришлите результат - и сразу обсудим вашу задачу. Бесплатно и ни
+                  к чему не обязывает.
+                </p>
+                <p class="stamp mt-3 block">Можно просто скопировать: {result.hint}</p>
+
+                <button type="button" class="minor mt-8" data-restart>
+                  Пройти заново
+                </button>
+              </div>
+            );
+          })
+        }
+      </div>
+
+      {/* Видно только когда скрипт не отработал. */}
+      <p class="nojs mt-8 text-sm leading-relaxed text-mist">
+        Квиз работает в браузере - здесь он не запустился.{' '}
+        {
+          telegramUrl ? (
+            <a
+              href={telegramUrl}
+              class="underline decoration-white/30 underline-offset-4 hover:decoration-white"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Напишите мне в Telegram
+            </a>
+          ) : (
+            'Напишите мне в Telegram'
+          )
+        }, разберёмся и без него.
       </p>
     </div>
   </div>
 </section>
+
+<style>
+  /* Скрытое - скрыто, даже если по классу задан display */
+  [hidden] {
+    display: none !important;
+  }
+
+  /* По умолчанию (скрипт не отработал) видны все вопросы сразу - это осмысленный
+     кадр: понятно, о чём спросят. Прятать лишние начинает только скрипт, когда
+     берёт управление на себя и ставит на панель data-js. */
+  [data-js] .q-card {
+    display: none;
+  }
+  [data-js] .q-card.is-on {
+    display: block;
+  }
+
+  [data-js] .nojs {
+    display: none;
+  }
+
+  .progress-bar {
+    width: 0;
+    transition: width 0.3s ease;
+  }
+
+  /* Вариант ответа. Крупный: квиз проходят с телефона большим пальцем, поэтому
+     кнопка во всю ширину и не ниже 56px - меньше промахов. */
+  .opt {
+    display: block;
+    width: 100%;
+    min-height: 3.5rem;
+    text-align: left;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #eef1f7;
+    padding: 1rem 1.125rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      transform 0.15s ease;
+  }
+  @media (min-width: 640px) {
+    .opt {
+      font-size: 1rem;
+      padding: 1.125rem 1.375rem;
+    }
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--color-violet-soft);
+    background-color: rgba(123, 109, 255, 0.16);
+  }
+  .opt:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  /* Ответ, выбранный раньше: человек вернулся назад и видит, на чём остановился */
+  .opt[aria-pressed='true'] {
+    border-color: var(--color-amber);
+    background-color: rgba(245, 165, 36, 0.14);
+  }
+  .opt:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* Второстепенные кнопки - «Назад» и «Пройти заново». Намеренно не .cta:
+     на странице ровно один призыв, и это не он. */
+  .minor {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    color: var(--color-mist);
+    background: none;
+    border: none;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: rgba(147, 160, 184, 0.4);
+    text-underline-offset: 4px;
+  }
+  .minor:hover {
+    color: #fff;
+    text-decoration-color: currentColor;
+  }
+
+  .q-title:focus-visible {
+    outline-offset: 6px;
+  }
+</style>
+
+<script>
+  /**
+   * Переключение экранов квиза. Считает баллы и показывает результат.
+   *
+   * Три правила, которые здесь соблюдаются:
+   *  1. Ответы никуда не уходят. Ни fetch, ни beacon, ни картинки-пиксели, ни
+   *     localStorage с cookies. Массив в памяти вкладки - и всё. Обновил
+   *     страницу - квиз начался заново, и это осознанный выбор, а не недоделка:
+   *     ничего не хранить проще объяснить проверяющему, чем хранить «немножко».
+   *  2. Вся логика вопросов и баллов - в src/data/quiz.ts. Здесь только показ.
+   *  3. Никаких внешних библиотек - это полсотни строк на классах и hidden.
+   */
+  import { questions, recommend } from '../data/quiz';
+
+  const root = document.querySelector<HTMLElement>('[data-quiz]');
+
+  if (root) {
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-q]'));
+    const resultBlocks = Array.from(root.querySelectorAll<HTMLElement>('[data-result]'));
+    const progress = root.querySelector<HTMLElement>('[data-progress]');
+    const progressText = root.querySelector<HTMLElement>('[data-progress-text]');
+    const bar = root.querySelector<HTMLElement>('[data-bar]');
+    const backBtn = root.querySelector<HTMLButtonElement>('[data-back]');
+
+    /** Ответы: индекс выбранного варианта на каждый вопрос, null - не отвечен. */
+    const answers: Array<number | null> = questions.map(() => null);
+
+    /** Текущий шаг. Равен числу вопросов - значит показываем результат. */
+    let current = 0;
+    const LAST = questions.length;
+
+    const render = (focus: boolean) => {
+      const done = current >= LAST;
+
+      cards.forEach((card, i) => card.classList.toggle('is-on', !done && i === current));
+
+      // Подсветить ранее выбранный вариант: человек вернулся - видит свой ответ
+      cards.forEach((card, i) => {
+        card.querySelectorAll<HTMLButtonElement>('.opt').forEach((btn, oi) => {
+          btn.setAttribute('aria-pressed', String(answers[i] === oi));
+        });
+      });
+
+      if (done) {
+        const bucket = recommend(answers);
+        resultBlocks.forEach((block) => {
+          block.hidden = block.dataset.result !== bucket;
+        });
+      } else {
+        resultBlocks.forEach((block) => {
+          block.hidden = true;
+        });
+      }
+
+      if (progressText) {
+        progressText.textContent = done ? 'Готово' : `Вопрос ${current + 1} из ${LAST}`;
+      }
+      if (bar) {
+        bar.style.width = `${((done ? LAST : current + 1) / LAST) * 100}%`;
+      }
+      // С первого вопроса назад некуда - кнопки там просто нет
+      if (backBtn) backBtn.hidden = current === 0;
+
+      if (!focus) return;
+      // Фокус на заголовок нового экрана: и скринридер прочитает, и клавиатура
+      // не уедет в начало страницы. preventScroll - чтобы страница не прыгала.
+      const target = done
+        ? resultBlocks.find((block) => !block.hidden)?.querySelector<HTMLElement>('h3')
+        : cards[current]?.querySelector<HTMLElement>('[data-title]');
+      target?.focus({ preventScroll: true });
+    };
+
+    // Скрипт жив - включаем кнопки и забираем показ экранов себе
+    root.querySelectorAll<HTMLButtonElement>('.opt').forEach((btn) => {
+      btn.disabled = false;
+    });
+    root.dataset.js = 'on';
+    if (progress) progress.hidden = false;
+
+    cards.forEach((card, qi) => {
+      card.querySelectorAll<HTMLButtonElement>('.opt').forEach((btn, oi) => {
+        btn.addEventListener('click', () => {
+          answers[qi] = oi;
+          current = qi + 1;
+          render(true);
+        });
+      });
+    });
+
+    backBtn?.addEventListener('click', () => {
+      if (current > 0) current -= 1;
+      render(true);
+    });
+
+    // «Пройти заново» - с чистого листа, а не с последнего ответа
+    root.querySelectorAll<HTMLButtonElement>('[data-restart]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        answers.fill(null);
+        current = 0;
+        render(true);
+      });
+    });
+
+    render(false);
+  }
+</script>

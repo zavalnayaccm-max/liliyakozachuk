@@ -76,8 +76,22 @@ export const fitnessCase = {
 };
 
 /**
+ * Telegram - единственный выход с сайта в Фазе А: и финал квиза, и строка в
+ * футере ведут сюда. Форма заявки появится только в Фазе Б, когда будет сервер
+ * в РФ (план, 3.5). Username дала Лилия 2026-07-23.
+ *
+ * Хранится в одном месте: сменится ник - правится одна строка, и меняются оба
+ * места сразу. Если поставить null - квиз честно покажет, что кнопка ещё не
+ * подключена, а не поведёт человека по битой ссылке.
+ */
+export const telegramUsername: string | null = 'leto4Kaa';
+export const telegramUrl: string | null = telegramUsername
+  ? `https://t.me/${telegramUsername}`
+  : null;
+
+/**
  * Контакты футера.
- * TODO (А5, нужны от Лилии): Telegram, публичная почта, ФИО и ИНН для оферты.
+ * TODO (А5, нужны от Лилии): публичная почта, ФИО и ИНН для оферты.
  * Не выдумываем и не подставляем заглушки: неверный контакт хуже отсутствующего.
  * Как появятся - вписать сюда, вёрстка футера подхватит сама.
  */
@@ -87,7 +101,7 @@ export const contacts: {
   legalName: string | null;
   inn: string | null;
 } = {
-  telegram: null,
+  telegram: telegramUrl,
   email: null,
   legalName: null,
   inn: null,
