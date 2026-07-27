@@ -26,13 +26,14 @@ import { botPackages, siteProducts } from './content';
  *   NA - «Ночной администратор»
  *   KV - «Квиз-воронка»
  *   IB - «Игровой бот»
+ *   TG - «Магазин в Telegram»
  *   SB - связка «сайт + бот» (главный оффер)
  *
  * «Кодового слова» среди корзин нет намеренно: по pricing.md оно продаётся
  * только как первый шаг и никогда как самоцель. Поэтому квиз структурно не может
  * его порекомендовать - не «мы стараемся не сваливать туда», а некуда сваливать.
  */
-export type BucketId = 'NA' | 'KV' | 'IB' | 'SB';
+export type BucketId = 'NA' | 'KV' | 'IB' | 'TG' | 'SB';
 
 export type QuizOption = {
   label: string;
@@ -68,6 +69,10 @@ export const questions: QuizQuestion[] = [
       {
         label: 'Аудитория холодная, охваты и вовлечённость падают',
         score: { IB: 2 },
+      },
+      {
+        label: 'Продаю товары, но заказы оформляются вручную и теряются',
+        score: { TG: 2 },
       },
     ],
   },
@@ -110,6 +115,10 @@ export const questions: QuizQuestion[] = [
         label: 'Запуститься так, чтобы было куда вести людей',
         score: { SB: 2 },
       },
+      {
+        label: 'Продавать товары прямо в мессенджере',
+        score: { TG: 2 },
+      },
     ],
   },
   {
@@ -120,6 +129,7 @@ export const questions: QuizQuestion[] = [
       { label: 'Локальные услуги: студия, салон, центр', score: { NA: 1 } },
       { label: 'Эксперт или инфобизнес: продаю знания и услуги', score: { KV: 1 } },
       { label: 'Блог или личный бренд: живу на аудитории', score: { IB: 1 } },
+      { label: 'Продаю товары: магазин, шоурум, хендмейд', score: { TG: 1 } },
       { label: 'Запускаю новое, выхожу в онлайн', score: { SB: 1 } },
     ],
   },
@@ -190,6 +200,14 @@ export const results: Record<BucketId, QuizResult> = {
     note: 'Собирается индивидуально: свои правила, свои карточки, свои призы. Готового шаблона здесь нет, и у ваших конкурентов такого не будет.',
     hint: 'Квиз с сайта, рекомендация - «Игровой бот»',
   },
+  TG: {
+    bucket: 'TG',
+    name: '«Магазин в Telegram»',
+    price: priceOfPackage('«Магазин в Telegram»'),
+    body: 'Витрина товаров прямо в Telegram: клиент листает каталог, кладёт в корзину и оформляет заказ, не выходя из мессенджера.',
+    note: 'Дальше управляете каталогом сами - добавляете и убираете товары, меняете цены без меня.',
+    hint: 'Квиз с сайта, рекомендация - «Магазин в Telegram»',
+  },
   SB: {
     bucket: 'SB',
     name: 'связка «сайт + бот»',
@@ -209,9 +227,11 @@ export const results: Record<BucketId, QuizResult> = {
  *     потому что закрывает самую частую боль аватара - утекающие заявки.
  *     Спека этот подслучай не оговаривает - если Лилия решит иначе, меняется
  *     одна строка ниже.
- *  3. «Квиз-воронка» (от 15 000 ₽) - последняя в очереди как самая дешёвая.
+ *  3. «Магазин в Telegram» и «Квиз-воронка» (обе от 15 000 ₽) - в конце очереди
+ *     как самые дешёвые. Магазин выше воронки: это конкретный запрос «продаю
+ *     товары», а не общая рекомендация.
  */
-export const BUCKET_ORDER: BucketId[] = ['SB', 'NA', 'IB', 'KV'];
+export const BUCKET_ORDER: BucketId[] = ['SB', 'NA', 'IB', 'TG', 'KV'];
 
 export type Scores = Record<BucketId, number>;
 
@@ -222,7 +242,7 @@ export type Scores = Record<BucketId, number>;
  * подсчёт не должен падать из-за подправленного руками URL или старого состояния.
  */
 export function scoreAnswers(answers: ReadonlyArray<number | null>): Scores {
-  const totals: Scores = { NA: 0, KV: 0, IB: 0, SB: 0 };
+  const totals: Scores = { NA: 0, KV: 0, IB: 0, TG: 0, SB: 0 };
 
   answers.forEach((choice, questionIndex) => {
     if (choice === null) return;
