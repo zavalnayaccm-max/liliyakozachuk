@@ -70,8 +70,12 @@ import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
     <h3 class="eyebrow mt-16">Боты и воронки</h3>
     <ul class="mt-6 grid gap-4 md:grid-cols-2">
       {
-        botPackages.map((pkg) => (
-          <li class="flex flex-col rounded-2xl bg-paper-2 p-6 ring-1 ring-ink/8 sm:p-7">
+        botPackages.map((pkg, i) => {
+          // Нечётная последняя карточка не висит в половину ряда, а тянется на
+          // всю ширину - иначе рядом с ней зияет пустая ячейка.
+          const spanFull = i === botPackages.length - 1 && botPackages.length % 2 === 1;
+          return (
+          <li class:list={['flex flex-col rounded-2xl bg-paper-2 p-6 ring-1 ring-ink/8 sm:p-7', spanFull && 'md:col-span-2']}>
             <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <h4 class="font-display text-lg font-semibold tracking-tight sm:text-xl">
                 {pkg.name}
@@ -85,7 +89,8 @@ import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
               </p>
             )}
           </li>
-        ))
+          );
+        })
       }
     </ul>
 
