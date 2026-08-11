@@ -7,7 +7,15 @@
  * «Кодовое слово» за 5 000 - последним. Иначе весь сайт читается как «боты за
  * пять тысяч» (план, раздел 6). Якорь цены на экране - 15 000 ₽.
  */
-import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
+import {
+  botPackages,
+  siteProducts,
+  siteBuiltInDays,
+  telegramUrl,
+  orderMessage,
+  phone,
+  phoneHref,
+} from '../data/content';
 ---
 
 <section class="pb-20 sm:pb-28">
@@ -83,13 +91,48 @@ import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
               <h4 class="font-display text-lg font-semibold tracking-tight sm:text-xl">
                 {pkg.name}
               </h4>
-              <p class="price text-sm whitespace-nowrap sm:text-base">{pkg.price}</p>
+              {/* Цена намеренно легче названия: янтарный уже сам по себе тянет
+                  взгляд, и при беглом скролле цена читалась раньше, чем человек
+                  понимал, что покупает. Вес 500 вместо 600 и один размер на всех
+                  экранах - заголовок карточки выигрывает первый взгляд. */}
+              <p class="price text-sm font-medium whitespace-nowrap">{pkg.price}</p>
             </div>
             <p class="mt-4 text-[0.9375rem] leading-relaxed text-graphite">{pkg.body}</p>
             {pkg.note && (
               <p class="mt-4 border-t border-ink/8 pt-4 text-sm leading-relaxed text-graphite">
                 {pkg.note}
               </p>
+            )}
+
+            {/* Призыв под конкретным пакетом. Нужен тому, кто уже выбрал и не
+                хочет проходить квиз ради того, что он и так знает.
+                mt-auto прижимает кнопку к низу карточки: описания у пакетов
+                разной длины, и без этого кнопки встали бы лесенкой. */}
+            {telegramUrl && (
+              <div class="mt-auto pt-6">
+                <a
+                  href={telegramUrl}
+                  class="cta-quiet w-full sm:w-auto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-order={orderMessage(pkg.name)}
+                  {/* Пять одинаковых ссылок подряд в скринридере звучат как
+                      пять «Обсудить в Telegram» без разницы между ними. Видимая
+                      подпись входит в имя целиком и первой (WCAG 2.5.3), а
+                      название пакета идёт хвостом - иначе у «Магазина в
+                      Telegram» получалось «Обсудить «Магазин в Telegram» в
+                      Telegram». */}
+                  aria-label={`Обсудить в Telegram: ${pkg.name}`}
+                >
+                  Обсудить в Telegram
+                </a>
+                {/* Появляется только если текст реально лёг в буфер. Скрипт
+                    ниже; без скрипта это просто ссылка в Telegram, и она
+                    работает. */}
+                <p class="stamp mt-2 block" data-order-done hidden aria-live="polite">
+                  Текст заявки скопирован - вставьте его в чат
+                </p>
+              </div>
             )}
           </li>
           );
@@ -112,7 +155,7 @@ import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
               <h4 class="font-display text-lg font-semibold tracking-tight">{product.name}</h4>
               <p class="mt-1 text-[0.9375rem] text-graphite">{product.body}</p>
             </div>
-            <p class="price text-sm whitespace-nowrap sm:text-base">{product.price}</p>
+            <p class="price text-sm font-medium whitespace-nowrap">{product.price}</p>
           </li>
         ))
       }
@@ -128,5 +171,78 @@ import { botPackages, siteProducts, siteBuiltInDays } from '../data/content';
         </p>
       )
     }
+
+    {
+      /* Телефон - для тех, кто не пишет в мессенджеры вообще. Стоит последним в
+         секции и набран мелко: это запасной канал, а не третий призыв.
+         Номера нет в content.ts - строки нет совсем (см. комментарий там). */
+      phone && phoneHref && (
+        <p class="mt-8 text-[0.9375rem] leading-relaxed text-graphite">
+          Не любите переписку - позвоните:{' '}
+          <a
+            href={phoneHref}
+            class="font-medium whitespace-nowrap underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
+          >
+            {phone}
+          </a>
+        </p>
+      )
+    }
   </div>
 </section>
+
+<style>
+  /* Скрытое - скрыто, даже если по классу задан display (у подтверждения стоит
+     block от Tailwind). Тот же приём, что в квизе. */
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script>
+  /**
+   * Кнопка «Обсудить в Telegram» на карточке пакета.
+   *
+   * Что делает: кладёт в буфер обмена готовую фразу с названием пакета и
+   * показывает под кнопкой строку-подтверждение. Сам переход в Telegram делает
+   * браузер по href - скрипт в него не вмешивается.
+   *
+   * Почему так, а не ссылкой с текстом: Telegram подставляет текст только в чат
+   * с ботом (?start=) и в share-ссылку. Для личного ника ?text= молча
+   * игнорируется - получилась бы кнопка, которая делает вид, что передала
+   * сообщение, но не передала.
+   *
+   * Без JS и при запрете на буфер обмена (старый браузер, http, отказ
+   * пользователя) не ломается ничего: остаётся обычная ссылка в Telegram.
+   */
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-order]');
+
+  for (const link of links) {
+    // Свой таймер на каждую кнопку. Без него второй клик по той же карточке
+    // гасился бы таймером от первого - подтверждение исчезало бы через секунду.
+    let timer = 0;
+
+    link.addEventListener('click', () => {
+      const text = link.dataset.order;
+      const done = link.parentElement?.querySelector<HTMLElement>('[data-order-done]');
+      if (!text || !navigator.clipboard) return;
+
+      // Пишем в буфер прямо в обработчике клика: это жест пользователя, только
+      // в нём браузер даёт доступ к буферу. Ссылка открывается в новой вкладке,
+      // текущая остаётся на месте - подтверждение человек увидит.
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          if (!done) return;
+          done.hidden = false;
+          window.clearTimeout(timer);
+          timer = window.setTimeout(() => {
+            done.hidden = true;
+          }, 6000);
+        })
+        // Отказали в буфере - молчим. Ссылка уже сработала, а извинение под
+        // кнопкой человеку ничего не даёт.
+        .catch(() => {});
+    });
+  }
+</script>

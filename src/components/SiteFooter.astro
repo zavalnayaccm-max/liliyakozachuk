@@ -15,7 +15,8 @@
 import { contacts, QUIZ_ANCHOR } from '../data/content';
 
 const year = new Date().getFullYear();
-const hasContacts = contacts.telegram !== null || contacts.email !== null;
+const hasContacts =
+  contacts.telegram !== null || contacts.email !== null || contacts.phone !== null;
 const legalLine = [contacts.legalName, contacts.inn && `ИНН ${contacts.inn}`]
   .filter(Boolean)
   .join(', ');
@@ -47,6 +48,14 @@ const legalLine = [contacts.legalName, contacts.inn && `ИНН ${contacts.inn}`]
                   rel="noopener noreferrer"
                 >
                   Telegram
+                </a>
+              )}
+              {contacts.phone && contacts.phoneHref && (
+                <a
+                  href={contacts.phoneHref}
+                  class="whitespace-nowrap underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                >
+                  {contacts.phone}
                 </a>
               )}
               {contacts.email && (

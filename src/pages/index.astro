@@ -7,11 +7,16 @@
  * заглушкой с якорем #quiz - логика придёт в подфазе А4, а якорь уже боевой:
  * на него ведут все кнопки страницы.
  *
+ * Proof - не экран из раздела 4, а тизер кейсов под первым экраном (решение
+ * Лилии 2026-08-11). Нумерацию экранов он не сдвигает: экран 5 остаётся на
+ * своём месте целиком, тизер только анонсирует его цифры до витрины пакетов.
+ *
  * Все ресурсы локальные: шрифты в src/fonts, картинок нет вообще, анимация на
  * CSS и своём скрипте. Ни одного внешнего запроса (план, 3.2).
  */
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
+import Proof from '../components/Proof.astro';
 import Pains from '../components/Pains.astro';
 import Offer from '../components/Offer.astro';
 import Demo from '../components/Demo.astro';
@@ -26,6 +31,7 @@ import StickyCta from '../components/StickyCta.astro';
 <Layout>
   <main id="main">
     <Hero />
+    <Proof />
     <Pains />
     <Offer />
     <Demo />

@@ -80,6 +80,11 @@
   --color-violet: #4b39ef;
   --color-violet-soft: #7b6dff;
   --color-amber: #f5a524;
+  /* Тот же янтарь, но пригодный для текста на светлой бумаге. Основной
+     #f5a524 даёт по paper-2 контраст 1.9:1 при норме 4.5:1 - на телефоне на
+     солнце цены не читаются. Этот тон даёт 5.4:1 по paper-2 и 4.9:1 по paper.
+     На тёмных секциях он не нужен: там светлый янтарь и так контрастен. */
+  --color-amber-ink: #96580a;
 
   --font-display: 'Unbounded', 'Trebuchet MS', sans-serif;
   --font-body: 'Onest', 'Segoe UI', system-ui, sans-serif;
@@ -156,12 +161,22 @@
     font-size: clamp(2.25rem, 9vw, 4rem);
   }
 
+  /* Та же цифра, но в тизере под первым экраном: она обязана читаться издалека
+     и при этом не спорить с H1, который стоит прямо над ней. */
+  .figure-sm {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    font-size: clamp(1.75rem, 6.5vw, 2.5rem);
+  }
+
   .night {
     background-color: var(--color-ink);
     color: #fff;
   }
 
-  /* Кнопка. На странице ровно один призыв - квиз, поэтому и вид у кнопки один. */
+  /* Кнопка главного призыва - квиз. Заливка фиолетовым есть только у неё. */
   .cta {
     display: inline-flex;
     align-items: center;
@@ -194,6 +209,42 @@
   .cta[aria-disabled='true']:hover {
     background-color: var(--color-ink-3);
     transform: none;
+  }
+
+  /* Тихая кнопка - призыв на карточке пакета. Нужна там, где человек уже выбрал
+     конкретную услугу и не хочет проходить квиз.
+
+     Почему не .cta: пять залитых фиолетовых кнопок в сетке карточек забьют
+     единственную главную кнопку страницы, и вместо одного ясного призыва
+     получится пять равных. Поэтому здесь только контур - её видно, когда ищешь
+     глазами, и она не спорит с квизом. Ровно тот же приём, что у .minor в квизе.
+
+     Высота 48px не случайна: по карточкам жмут пальцем с телефона, а меньше
+     44-48px - промахи (то же основание, что у .opt в квизе). */
+  .cta-quiet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
+    background-color: transparent;
+    color: var(--color-ink);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1.25;
+    padding: 0.75rem 1.375rem;
+    text-align: center;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .cta-quiet:hover {
+    border-color: var(--color-violet);
+    background-color: color-mix(in srgb, var(--color-violet) 8%, transparent);
+    color: var(--color-violet);
   }
 
   /* Пузырь сообщения. Базовый кирпич всего сайта: боли клиентов, переписка
@@ -233,6 +284,11 @@
     font-family: var(--font-mono);
     font-weight: 600;
     letter-spacing: -0.02em;
+    color: var(--color-amber-ink);
+  }
+  /* На тёмном (цена в результате квиза) возвращаем светлый янтарь: тёмный тон
+     по ночному фону не читается. Тот же приём, что у .eyebrow выше. */
+  .night .price {
     color: var(--color-amber);
   }
 }

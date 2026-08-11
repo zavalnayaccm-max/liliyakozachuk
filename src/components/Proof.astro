@@ -1,0 +1,100 @@
+---
+/**
+ * Тизер-доказательство. Стоит сразу под первым экраном - решение Лилии
+ * 2026-08-11.
+ *
+ * Зачем именно здесь. Цифры кейсов - самое сильное, что есть на странице, но
+ * полный экран кейсов (экран 5) человек видит только после витрины пакетов и
+ * демо. Кто не долистал - не увидел доказательств вообще и разбирался в ценах,
+ * не зная, работает ли это у кого-нибудь. Тизер показывает две цифры до
+ * пакетов, а ссылка ведёт в тот же экран 5 - целиком, с «было / стало» и
+ * отзывами. Экран 5 не переносится и не сокращается: здесь только анонс.
+ *
+ * Это НЕ второй призыв. Единственный CTA страницы - квиз (план, 4.2), поэтому
+ * ссылка вниз набрана текстом, а не кнопкой, и стоит после цифр.
+ *
+ * Цифры не выдуманы и не продублированы: обе константы - те же, что печатает
+ * экран 5 (src/data/content.ts, правило репо №1). Ничего сверх экрана 5 тизер
+ * не обещает.
+ *
+ * Тёмный фон - продолжение первого экрана на полтона светлее (ink-2): это
+ * визуально одна вводная часть, а не ещё одна тёмная секция посреди страницы.
+ */
+import { fitnessCase, fitnessClient, juristCase } from '../data/content';
+---
+
+<section class="night border-t border-white/10 bg-ink-2" aria-labelledby="proof-title">
+  <div class="shell py-12 sm:py-14">
+    <h2 id="proof-title" class="eyebrow">Уже работает у клиентов</h2>
+
+    <div class="mt-8 grid gap-10 sm:grid-cols-2 sm:gap-12">
+      {/* Кейс 1 - фитнес. «Было / стало» одной строкой: янтарная черта здесь
+          означает то же, что и на экране 5, - переход к «стало». */}
+      <div>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          {/* «Было → стало» переносится только целиком: половина сравнения на
+              отдельной строке доказывает не то, что нужно. */}
+          <span class="flex items-center gap-x-4">
+            {/* «Было» приглушено намеренно - как и на экране 5. Но не сильнее
+                white/40: на тёмном фоне это уже граница читаемости для крупного
+                текста (3:1), а цифра здесь не украшение, а половина сравнения. */}
+            <span class="figure-sm text-white/40">{fitnessCase.before}</span>
+            <span aria-hidden="true" class="h-0.5 w-8 bg-amber sm:w-10"></span>
+            <span class="figure-sm text-white">{fitnessCase.after}</span>
+          </span>
+          <span class="font-mono text-xs tracking-widest text-mist uppercase">
+            {fitnessCase.unit}
+          </span>
+        </div>
+        {/* Клиент назван по имени (2026-08-11): в тизере это первое, что человек
+            вообще узнаёт о моей работе, и живое название весит здесь больше,
+            чем на экране 5. Логотипа тут нет намеренно - тизер держится на
+            цифрах, картинка рядом с ними спорит за внимание. Имя берётся из той
+            же константы, что и на экране 5: двух копий названия в вёрстке быть
+            не должно (правило репо №1). */}
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-[#c8d0e0] sm:text-[0.9375rem]">
+          {fitnessClient.name}, фитнес-студия: ИИ отвечает ночью и в выходные.
+          Записей почти вдвое больше при том же потоке обращений.
+        </p>
+      </div>
+
+      {/* Кейс 2 - юристы. Здесь сильна не одна цифра, а их пара: запусков много,
+          и часть из них живёт годами, а не «сделали и забыли».
+
+          Цифра и её подпись лежат в одной обёртке НЕ для красоты: без неё на
+          узком экране «5» остаётся в конце первой строки, а её подпись
+          уезжает на вторую - и строка читается как «20+ ботов запущено 5».
+          Обёртка заставляет пару переноситься целиком. */}
+      <div>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <span class="flex items-center gap-x-3">
+            <span class="figure-sm text-white">{juristCase.total}</span>
+            <span class="max-w-[9rem] font-mono text-xs tracking-widest text-mist uppercase">
+              {juristCase.totalLabel}
+            </span>
+          </span>
+          <span class="flex items-center gap-x-3">
+            <span class="figure-sm text-white">{juristCase.live}</span>
+            <span class="max-w-[11rem] font-mono text-xs tracking-widest text-mist uppercase">
+              {juristCase.liveLabel}
+            </span>
+          </span>
+        </div>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-[#c8d0e0] sm:text-[0.9375rem]">
+          Юристы: работаем не первый год, боты приносят деньги постоянно, а не
+          один запуск.
+        </p>
+      </div>
+    </div>
+
+    <p class="mt-9">
+      <a
+        href="#cases"
+        class="inline-flex items-center gap-2 text-sm font-medium text-white underline decoration-amber/60 decoration-1 underline-offset-4 transition-colors hover:decoration-amber"
+      >
+        Смотреть кейсы целиком
+        <span aria-hidden="true" class="text-amber">&darr;</span>
+      </a>
+    </p>
+  </div>
+</section>
