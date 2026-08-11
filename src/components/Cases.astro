@@ -18,10 +18,30 @@
  */
 import ChatFitness from './ChatFitness.astro';
 import GameLoop from './GameLoop.astro';
-import { fitnessCase } from '../data/content';
+import { fitnessCase, fitnessClient, juristCase } from '../data/content';
+
+/* Клиент Кейса 1 назван по имени (решение Лилии 2026-08-11, разрешение студии
+   получено - testimonials.md). Анонимный «фитнес-центр» читается как выдумка,
+   живое название с логотипом - как проверяемый факт.
+
+   Путь к логотипу собирается здесь, а не в data: сайт отдаётся из подпапки
+   /liliyakozachuk/, и без base картинка молча не найдётся в проде, хотя в dev
+   будет работать. Логотипа нет - строка остаётся с одним названием.
+
+   Оба replace обязательны, и второй - не косметика. Хвостовой слэш base плюс
+   ведущий слэш пути дали бы `//clients/logo.png`, а это не «двойной слэш», а
+   protocol-relative URL: браузер пойдёт за картинкой на ЧУЖОЙ домен clients.
+   Тогда страница делает внешний запрос - ровно то, что запрещает требование
+   3.2 плана (все ресурсы локально, сайт обязан открываться из РФ). */
+const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
+const fitnessLogoSrc = fitnessClient.logo
+  ? `${base}/${fitnessClient.logo.replace(/^\/+/, '')}`
+  : null;
 ---
 
-<section class="py-20 sm:py-28">
+{/* Якорь #cases - боевой: на него ведёт ссылка из тизера под первым экраном.
+    scroll-mt нужен, чтобы заголовок секции не прилипал к самому краю окна. */}
+<section id="cases" class="scroll-mt-8 py-20 sm:py-28">
   <div class="shell">
     <p class="eyebrow">Мои клиенты</p>
     <h2 class="h-section mt-4">Что было и что стало</h2>
@@ -29,9 +49,36 @@ import { fitnessCase } from '../data/content';
     {/* ------------------------------ Кейс 1 ------------------------------ */}
     <article class="mt-14 grid gap-10 lg:grid-cols-12 lg:gap-12">
       <div class="lg:col-span-7">
-        <p class="eyebrow">Кейс 1 &middot; Фитнес-центр, две студии</p>
+        <p class="eyebrow">Кейс 1</p>
 
-        <div class="mt-6">
+        {/* Имя клиента и логотип - до цифр: сначала «кто», потом «что
+            получилось». Логотип квадратный и обрезается в круг - так он
+            совпадает с тем, каким его видят в профиле студии. */}
+        <div class="mt-4 flex items-center gap-3.5">
+          {
+            fitnessLogoSrc && (
+              <img
+                src={fitnessLogoSrc}
+                alt={`Логотип фитнес-студии ${fitnessClient.name}`}
+                width="48"
+                height="48"
+                loading="lazy"
+                decoding="async"
+                class="h-12 w-12 shrink-0 rounded-full object-cover ring-1 ring-ink/10"
+              />
+            )
+          }
+          <div>
+            <p
+              class="font-display text-xl leading-tight font-semibold tracking-[-0.02em] text-ink sm:text-2xl"
+            >
+              {fitnessClient.name}
+            </p>
+            <p class="mt-1 text-sm text-graphite">{fitnessClient.role}</p>
+          </div>
+        </div>
+
+        <div class="mt-8">
           <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
             <span class="figure text-ink/35">{fitnessCase.before}</span>
             <span aria-hidden="true" class="h-0.5 w-10 bg-amber sm:w-14"></span>
@@ -105,7 +152,8 @@ import { fitnessCase } from '../data/content';
             обращаться по необходимости.{'\n'}Рекомендую однозначно!
           </p>
           <footer class="stamp mt-4 block text-graphite">
-            Маргарита, управляющая фитнес-студией. Отзыв на Авито, 5 звёзд.
+            Маргарита, управляющая студией {fitnessClient.name}. Отзыв на Авито, 5
+            звёзд.
           </footer>
         </blockquote>
       </div>
@@ -118,22 +166,37 @@ import { fitnessCase } from '../data/content';
     {/* ------------------------------ Кейс 2 ------------------------------ */}
     <article id="case-game" class="mt-20 grid scroll-mt-16 gap-10 lg:grid-cols-12 lg:gap-12">
       <div class="lg:col-span-7">
-        <p class="eyebrow">Кейс 2 &middot; Анастасия и Иван Распутины, юристы</p>
+        <p class="eyebrow">Кейс 2</p>
 
-        <div class="mt-6">
+        {/* Та же шапка, что у Кейса 1: имя клиента крупно, роль строкой ниже.
+            После того как Кейс 1 назвал студию по имени, разнобой в подаче
+            читался бы как разная степень достоверности кейсов. Логотипа у этого
+            клиента нет - блок это переживает, картинка здесь необязательна. */}
+        <div class="mt-4">
+          <p
+            class="font-display text-xl leading-tight font-semibold tracking-[-0.02em] text-ink sm:text-2xl"
+          >
+            Анастасия и Иван Распутины
+          </p>
+          <p class="mt-1 text-sm text-graphite">
+            юристы, работают с дизайнерами интерьеров
+          </p>
+        </div>
+
+        <div class="mt-8">
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span class="figure text-ink">20+</span>
+            <span class="figure text-ink">{juristCase.total}</span>
             <span class="font-mono text-xs tracking-widest text-graphite uppercase">
-              ботов запущено
+              {juristCase.totalLabel}
             </span>
           </div>
         </div>
 
         <div class="mt-10 border-t border-ink/10 pt-8">
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span class="figure text-ink">5</span>
+            <span class="figure text-ink">{juristCase.live}</span>
             <span class="max-w-[14rem] font-mono text-xs tracking-widest text-graphite uppercase">
-              работают постоянно и приносят доход
+              {juristCase.liveLabel}
             </span>
           </div>
           <p class="mt-4 max-w-lg text-base leading-relaxed text-graphite">
@@ -184,8 +247,11 @@ import { fitnessCase } from '../data/content';
             команды.{'\n'}С ней запустили уже более 20 ботов. Сейчас у нас на
             постоянной основе работают 5, которые приносят нам постоянный доход.
           </p>
+          {/* Кто это - уже сказано в шапке кейса, поэтому здесь только канал:
+              повтор «юристы, работают с дизайнерами интерьеров» второй раз на
+              одном экране выглядел бы как заполнение места. */}
           <footer class="stamp mt-4 block text-graphite">
-            Анастасия и Иван Распутины, юристы. Работают с дизайнерами интерьеров.
+            Анастасия и Иван Распутины, из личной переписки.
           </footer>
         </blockquote>
 
