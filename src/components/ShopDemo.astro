@@ -1,0 +1,326 @@
+---
+/**
+ * Экран 4, третий блок - демо-витрина интернет-магазина.
+ * Отвечает на пятую боль экрана 2 («продаю через маркетплейс, а хочу со своего
+ * сайта») и показывает линейку 2 в работе, а не словами.
+ *
+ * ЭТО НЕ КЕЙС. Клиента с интернет-магазином у меня нет: в avatar.md e-commerce
+ * помечен как «гипотеза, кейса пока нет». Поэтому блок стоит на экране 4
+ * (демо), а не на экране 5 (кейсы), подписан «показательный пример» и прямо
+ * говорит, что товары и цены выдуманы. Как только появится живой магазин с
+ * согласием заказчика - он идёт в кейсы, а этот блок остаётся демо.
+ *
+ * Что здесь показано и почему именно так:
+ *  - витрина светлая на тёмной секции: так она читается как чужой сайт внутри
+ *    моего, а не как ещё один мой блок;
+ *  - товары нарисованы инлайновым SVG, а не картинками. На странице нет ни
+ *    одного внешнего запроса и ни одного растрового файла (план, 3.2), и
+ *    ломать это ради демо нельзя;
+ *  - домен в адресной строке - «ваш-магазин.ру». Настоящего чужого домена тут
+ *    быть не может: это выдуманная витрина, и выдавать её за живой сайт нельзя;
+ *  - цены товаров набраны цветом ink, а НЕ классом .price (янтарный). Янтарный
+ *    на этой странице означает мои цены. Спутать цену колечка с ценой моей
+ *    работы - худшее, что может сделать этот блок;
+ *  - заказ уходит в Telegram-бот, а не «оплачивается картой». Приём платежей -
+ *    это сложный бэкенд, который я пока не беру (CLAUDE.md, стек). Показывать
+ *    то, чего не соберу, нельзя даже в демо.
+ */
+
+/** Разделитель разрядов - неразрывный пробел, чтобы цена не рвалась по строке. */
+const rub = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+const goods = [
+  { id: 'ring', name: 'Кольцо «Гладь»', note: 'серебро 925', price: 4900 },
+  { id: 'earrings', name: 'Серьги «Капли»', note: 'серебро, ручная ковка', price: 3200 },
+  { id: 'pendant', name: 'Подвеска «Зерно»', note: 'серебро, зелёный агат', price: 6400 },
+];
+---
+
+<figure class="shop overflow-hidden rounded-3xl bg-paper text-ink" data-shop>
+  {/* Шапка браузера: она объясняет без единого слова, что ниже - сайт. */}
+  <div class="flex items-center gap-3 border-b border-ink/10 bg-paper-2 px-4 py-3 sm:px-5">
+    <div aria-hidden="true" class="flex gap-1.5">
+      <span class="h-2.5 w-2.5 rounded-full bg-ink/15"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-ink/15"></span>
+      <span class="h-2.5 w-2.5 rounded-full bg-ink/15"></span>
+    </div>
+    <p class="flex-1 truncate rounded-lg bg-white px-3 py-1.5 font-mono text-[0.6875rem] text-graphite ring-1 ring-ink/8">
+      ваш-магазин.ру
+    </p>
+  </div>
+
+  <div class="p-5 sm:p-7">
+    {/* Шапка самого магазина: имя мастера и корзина. Корзина - живая. */}
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 pb-5">
+      <div>
+        <p class="font-display text-base font-semibold tracking-tight sm:text-lg">
+          Мастерская украшений
+        </p>
+        <p class="mt-1 text-sm text-graphite">Ручная работа, серебро</p>
+      </div>
+      <p
+        class="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-white"
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          class="h-4 w-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M5 7h14l-1.2 10.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z"></path>
+          <path d="M9 7a3 3 0 0 1 6 0"></path>
+        </svg>
+        Корзина: <span data-cart-count>0</span>
+      </p>
+    </div>
+
+    <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+      {
+        goods.map((item) => (
+          <li class="flex flex-col rounded-2xl bg-white p-4 ring-1 ring-ink/8">
+            <div class={`tile tile-${item.id}`}>
+              {item.id === 'ring' && (
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 64 64"
+                  class="h-24 w-24 sm:h-28 sm:w-28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="32" cy="41" r="17" stroke-width="2.6" />
+                  <path d="M32 6l9 10-9 10-9-10z" stroke-width="2.2" />
+                  <path d="M23 16h18" stroke-width="1.6" />
+                </svg>
+              )}
+              {item.id === 'earrings' && (
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 64 64"
+                  class="h-24 w-24 sm:h-28 sm:w-28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="21" cy="11" r="4" stroke-width="2.2" />
+                  <path d="M21 15v8" stroke-width="1.8" />
+                  <path d="M21 23c-9 10-9 23 0 23s9-13 0-23z" stroke-width="2.4" />
+                  <circle cx="44" cy="11" r="4" stroke-width="2.2" />
+                  <path d="M44 15v8" stroke-width="1.8" />
+                  <path d="M44 23c-7 8-7 18 0 18s7-10 0-18z" stroke-width="2.4" />
+                </svg>
+              )}
+              {item.id === 'pendant' && (
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 64 64"
+                  class="h-24 w-24 sm:h-28 sm:w-28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M8 10c0 18 10 29 24 29s24-11 24-29" stroke-width="2.2" />
+                  <path d="M32 36l9 10-9 14-9-14z" stroke-width="2.4" />
+                </svg>
+              )}
+            </div>
+
+            <p class="mt-4 font-display text-[0.9375rem] leading-snug font-semibold tracking-tight">
+              {item.name}
+            </p>
+            <p class="mt-1 text-xs text-graphite">{item.note}</p>
+
+            {/* Цена товара - НЕ моя цена. Поэтому цветом ink, а не янтарным. */}
+            <p class="mt-3 font-mono text-sm font-semibold">{rub(item.price)}&nbsp;₽</p>
+
+            <button
+              type="button"
+              class="add mt-4"
+              data-add
+              data-price={item.price}
+            >
+              В корзину
+              <span class="sr-only">: {item.name}</span>
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+
+    {/* Куда уходит заказ. Это и есть связка «сайт + бот»: витрина собрала
+        корзину, бот принял заказ и повёл человека дальше. Область живая для
+        скринридера - строка меняется по нажатию. */}
+    <div class="mt-6 rounded-2xl bg-ink px-5 py-4 text-white">
+      <div class="flex items-center gap-2">
+        <span class="h-2 w-2 rounded-full bg-amber"></span>
+        <span class="stamp">Заказ уходит боту в Telegram</span>
+      </div>
+      <p class="mt-3 text-sm leading-relaxed text-[#c8d0e0]" data-order aria-live="polite">
+        <span class="nojs">
+          Корзина собирается на сайте, заказ падает боту, бот забирает адрес и
+          пишет вам. Без комиссии площадки и без чужих карточек рядом.
+        </span>
+        <span class="js-hint">Нажмите «В корзину» - и посмотрите, что произойдёт.</span>
+      </p>
+    </div>
+  </div>
+
+  <figcaption class="border-t border-ink/10 bg-paper-2 px-5 py-4 text-sm leading-relaxed text-graphite sm:px-7">
+    Показательный пример, а не клиентский проект: мастерская, товары и цены
+    выдуманы. Ваш магазин соберу так же - со своим товаром, своим оформлением и
+    заказами, которые приходят вам, а не площадке.
+  </figcaption>
+</figure>
+
+<style>
+  /* Плитка товара. Три разных оттенка - чтобы витрина читалась как три разных
+     товара, а не как один шаблон, повторённый трижды. */
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    border-radius: 0.875rem;
+  }
+  .tile-ring {
+    background: linear-gradient(150deg, #e8e5ff 0%, #f6f5ff 100%);
+    color: #4b39ef;
+  }
+  .tile-earrings {
+    background: linear-gradient(150deg, #fdeccd 0%, #fdf8ee 100%);
+    color: #a9700d;
+  }
+  .tile-pendant {
+    background: linear-gradient(150deg, #dfe6f2 0%, #f4f7fc 100%);
+    color: #3a4763;
+  }
+
+  /* Кнопка витрины намеренно НЕ .cta: единственный призыв на моей странице -
+     квиз, и демо-магазин не должен спорить с ним за внимание. */
+  .add {
+    margin-top: auto;
+    width: 100%;
+    border-radius: 999px;
+    border: 1px solid rgba(14, 21, 36, 0.15);
+    background-color: #fff;
+    /* 0.75rem сверху и снизу - чтобы кнопка была не ниже 44 px: это палец на
+       телефоне, а не курсор. При 0.625rem замер давал 43 px. */
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .add:hover {
+    background-color: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+  .add[data-done] {
+    background-color: rgba(75, 57, 239, 0.1);
+    border-color: rgba(75, 57, 239, 0.35);
+    color: var(--color-violet);
+  }
+
+  /* Без JS витрина показывает осмысленный текст, а не приглашение нажать на
+     то, что не отзовётся. Подсказку включает сам скрипт. */
+  .js-hint {
+    display: none;
+  }
+  [data-js] .js-hint {
+    display: inline;
+  }
+  [data-js] .nojs {
+    display: none;
+  }
+
+  /* Витрина светлая, но лежит внутри тёмной секции - а там глобальный стиль
+     красит фокус янтарным (global.css, .night :focus-visible). Янтарный по
+     белой карточке почти не виден, поэтому внутри витрины возвращаем
+     фиолетовый: клавиатурный фокус обязан быть заметен. */
+  .shop :focus-visible {
+    outline-color: var(--color-violet);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+</style>
+
+<script>
+  /**
+   * Живая корзина демо-витрины.
+   *
+   * Смысл ровно один: человек должен нажать и увидеть, что оно работает -
+   * экран 4 называется «Не верьте на слово. Потрогайте» (план, 4.3). Никаких
+   * библиотек, никаких запросов наружу: всё считается здесь же, в браузере.
+   *
+   * Скрипт вешает на витрину data-js. Пока атрибута нет, работает разметка по
+   * умолчанию - осмысленное описание вместо подсказки «нажмите». Так блок
+   * корректен и с выключенным JS.
+   */
+  const shop = document.querySelector<HTMLElement>('[data-shop]');
+
+  if (shop) {
+    const countEl = shop.querySelector<HTMLElement>('[data-cart-count]');
+    const orderEl = shop.querySelector<HTMLElement>('[data-order]');
+    const buttons = Array.from(shop.querySelectorAll<HTMLButtonElement>('[data-add]'));
+
+    if (countEl && orderEl && buttons.length) {
+      shop.dataset.js = 'on';
+
+      /** Тот же формат, что и в разметке: неразрывный пробел между разрядами. */
+      const rub = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+      let count = 0;
+      let total = 0;
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const price = Number(button.dataset.price);
+          if (!Number.isFinite(price)) return;
+
+          count += 1;
+          total += price;
+          countEl.textContent = String(count);
+
+          // Кнопка помечается, чтобы человек видел, что именно он положил.
+          button.dataset.done = 'on';
+
+          /**
+           * Русское склонение по числу. Наивное «1 - товар, 2-4 - товара,
+           * дальше товаров» врёт начиная с 21: нажать «В корзину» двадцать
+           * один раз можно за полминуты, и витрина скажет «21 товаров».
+           */
+          const plural = (n: number) => {
+            const tail100 = n % 100;
+            const tail10 = n % 10;
+            if (tail100 >= 11 && tail100 <= 14) return 'товаров';
+            if (tail10 === 1) return 'товар';
+            if (tail10 >= 2 && tail10 <= 4) return 'товара';
+            return 'товаров';
+          };
+          const goods = plural(count);
+          orderEl.textContent = `Заказ: ${count} ${goods} на ${rub(total)} ₽. Бот уже пишет покупателю: «Куда доставить?»`;
+        });
+      });
+    }
+  }
+</script>
