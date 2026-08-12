@@ -211,40 +211,45 @@
     transform: none;
   }
 
-  /* Тихая кнопка - призыв на карточке пакета. Нужна там, где человек уже выбрал
-     конкретную услугу и не хочет проходить квиз.
+  /* Кнопка на карточке пакета - призыв для того, кто уже выбрал услугу и не
+     хочет проходить квиз.
 
-     Почему не .cta: пять залитых фиолетовых кнопок в сетке карточек забьют
-     единственную главную кнопку страницы, и вместо одного ясного призыва
-     получится пять равных. Поэтому здесь только контур - её видно, когда ищешь
-     глазами, и она не спорит с квизом. Ровно тот же приём, что у .minor в квизе.
+     Была контурной, стала залитой (правка 2026-08-11). Причина прямая: Лилия
+     не нашла её на живом сайте глазами. Расчёт «контур не спорит с главной
+     кнопкой» оказался неверным по приоритету - призыв, которого не видно,
+     не выполняет свою работу вообще, а иерархия при этом защищает ничто.
+
+     Иерархию держит размер, а не цвет: у главной .cta шрифт 1rem, padding
+     1rem/1.75rem и фиолетовое свечение снизу; здесь шрифт мельче, padding
+     меньше, тени нет. Рядом на одном экране они не встречаются никогда.
 
      Высота 48px не случайна: по карточкам жмут пальцем с телефона, а меньше
      44-48px - промахи (то же основание, что у .opt в квизе). */
-  .cta-quiet {
+  .cta-card {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     min-height: 3rem;
     border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
-    background-color: transparent;
-    color: var(--color-ink);
+    border: none;
+    background-color: var(--color-violet);
+    color: #fff;
     font-weight: 600;
     font-size: 0.9375rem;
     line-height: 1.25;
     padding: 0.75rem 1.375rem;
     text-align: center;
     transition:
-      border-color 0.15s ease,
       background-color 0.15s ease,
-      color 0.15s ease;
+      transform 0.15s ease;
   }
-  .cta-quiet:hover {
-    border-color: var(--color-violet);
-    background-color: color-mix(in srgb, var(--color-violet) 8%, transparent);
-    color: var(--color-violet);
+  .cta-card:hover {
+    background-color: var(--color-violet-soft);
+    transform: translateY(-1px);
+  }
+  .cta-card:active {
+    transform: translateY(0);
   }
 
   /* Пузырь сообщения. Базовый кирпич всего сайта: боли клиентов, переписка
